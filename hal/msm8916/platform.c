@@ -2722,6 +2722,12 @@ snd_device_t platform_get_input_snd_device(void *platform, audio_devices_t out_d
     snd_device_t snd_device = SND_DEVICE_NONE;
     int channel_count = popcount(channel_mask);
 
+    int force_dmic_camcorder = 0;
+    if (property_get_bool("audio.force.dmic.for.camcorder", false)) {
+        force_dmic_camcorder = 1;
+        ALOGI("%s: force dual mic for camcorder", __func__);
+    }
+
     ALOGV("%s: enter: out_device(%#x) in_device(%#x) channel_count (%d) channel_mask (0x%x)",
           __func__, out_device, in_device, channel_count, channel_mask);
     if (my_data->external_mic) {
@@ -2828,9 +2834,9 @@ snd_device_t platform_get_input_snd_device(void *platform, audio_devices_t out_d
     } else if (source == AUDIO_SOURCE_CAMCORDER) {
         if (in_device & AUDIO_DEVICE_IN_BUILTIN_MIC ||
             in_device & AUDIO_DEVICE_IN_BACK_MIC) {
-            if ((my_data->fluence_type & FLUENCE_DUAL_MIC) &&
+            if (((my_data->fluence_type & FLUENCE_DUAL_MIC) &&
                 (my_data->source_mic_type & SOURCE_DUAL_MIC) &&
-                (channel_count == 2))
+                (channel_count == 2)) || force_dmic_camcorder)
                 snd_device = SND_DEVICE_IN_HANDSET_STEREO_DMIC;
             else
                 snd_device = SND_DEVICE_IN_CAMCORDER_MIC;
