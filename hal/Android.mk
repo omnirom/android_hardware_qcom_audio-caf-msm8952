@@ -6,6 +6,8 @@ include $(CLEAR_VARS)
 
 LOCAL_ARM_MODE := arm
 
+LOCAL_CFLAGS := -Wno-error -Wno-sign-compare
+
 AUDIO_PLATFORM := $(TARGET_BOARD_PLATFORM)
 
 ifneq ($(filter msm8974 msm8226 msm8610 apq8084 msm8994 msm8992 msm8996,$(TARGET_BOARD_PLATFORM)),)
@@ -51,6 +53,7 @@ LOCAL_SRC_FILES += audio_extn/audio_extn.c \
                    audio_extn/utils.c
 LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
 LOCAL_ADDITIONAL_DEPENDENCIES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
+LOCAL_CFLAGS += -DUSE_VENDOR_EXTN
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_HDMI_EDID)),true)
     LOCAL_SRC_FILES += edid.c
@@ -232,23 +235,25 @@ ifeq ($(strip $(AUDIO_FEATURE_ENABLED_SOURCE_TRACKING)),true)
 endif
 
 LOCAL_SHARED_LIBRARIES := \
-	liblog \
-	libcutils \
-	libtinyalsa \
-	libtinycompress \
-	libaudioroute \
-	libdl \
-	libexpat
+        liblog \
+        libcutils \
+        libtinyalsa \
+        libtinycompress_vendor \
+        libaudioroute \
+        libdl \
+        libaudioutils \
+        libexpat
 
 LOCAL_C_INCLUDES += \
-	external/tinyalsa/include \
-	external/tinycompress/include \
-	external/expat/lib \
-	$(call include-path-for, audio-route) \
-	$(call include-path-for, audio-effects) \
-	$(LOCAL_PATH)/$(AUDIO_PLATFORM) \
-	$(LOCAL_PATH)/audio_extn \
-	$(LOCAL_PATH)/voice_extn
+        external/tinyalsa/include \
+        external/tinycompress/include \
+        external/expat/lib \
+        system/media/audio_utils/include \
+        $(call include-path-for, audio-route) \
+        $(call include-path-for, audio-effects) \
+        $(LOCAL_PATH)/$(AUDIO_PLATFORM) \
+        $(LOCAL_PATH)/audio_extn \
+        $(LOCAL_PATH)/voice_extn
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_LISTEN)),true)
     LOCAL_CFLAGS += -DAUDIO_LISTEN_ENABLED

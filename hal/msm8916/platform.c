@@ -208,6 +208,7 @@ typedef struct {
 } native_audio_prop;
 
 static native_audio_prop na_props = {0, 0};
+static bool supports_true_32_bit = false;
 
 struct platform_data {
     struct audio_device *adev;
@@ -1035,6 +1036,29 @@ static void query_platform(const char *snd_card_name,
             sizeof(msm_device_to_be_id_internal_codec) / sizeof(msm_device_to_be_id_internal_codec[0]);
 
     }
+}
+
+static void true_32_bit_set_params(struct str_parms *parms,
+                                 char *value, int len)
+{
+    int ret = 0;
+
+    ret = str_parms_get_str(parms, AUDIO_PARAMETER_KEY_TRUE_32_BIT,
+                            value,len);
+    if (ret >= 0) {
+        if (value && !strncmp(value, "true", sizeof("src")))
+            supports_true_32_bit = true;
+        else
+            supports_true_32_bit = false;
+        str_parms_del(parms, AUDIO_PARAMETER_KEY_TRUE_32_BIT);
+    }
+
+}
+
+
+bool platform_supports_true_32bit()
+{
+   return supports_true_32_bit;
 }
 
 void platform_set_echo_reference(struct audio_device *adev, bool enable,
@@ -2859,10 +2883,10 @@ snd_device_t platform_get_input_snd_device(void *platform, audio_devices_t out_d
                        (channel_mask == AUDIO_CHANNEL_IN_STEREO)) &&
                        (my_data->source_mic_type & SOURCE_DUAL_MIC)) {
                 snd_device = SND_DEVICE_IN_VOICE_REC_DMIC_STEREO;
-            } else if (((int)channel_mask == AUDIO_CHANNEL_INDEX_MASK_3) &&
+            } else if ((channel_mask == AUDIO_CHANNEL_INDEX_MASK_3) &&
                        (my_data->source_mic_type & SOURCE_THREE_MIC)) {
                 snd_device = SND_DEVICE_IN_THREE_MIC;
-            } else if (((int)channel_mask == AUDIO_CHANNEL_INDEX_MASK_4) &&
+            } else if ((channel_mask == AUDIO_CHANNEL_INDEX_MASK_4) &&
                        (my_data->source_mic_type & SOURCE_QUAD_MIC)) {
                 snd_device = SND_DEVICE_IN_QUAD_MIC;
             }
@@ -2879,10 +2903,10 @@ snd_device_t platform_get_input_snd_device(void *platform, audio_devices_t out_d
                 (channel_mask == AUDIO_CHANNEL_IN_STEREO)) &&
                 (my_data->source_mic_type & SOURCE_DUAL_MIC)) {
                 snd_device = SND_DEVICE_IN_UNPROCESSED_STEREO_MIC;
-            } else if (((int)channel_mask == AUDIO_CHANNEL_INDEX_MASK_3) &&
+            } else if ((channel_mask == AUDIO_CHANNEL_INDEX_MASK_3) &&
                 (my_data->source_mic_type & SOURCE_THREE_MIC)) {
                 snd_device = SND_DEVICE_IN_UNPROCESSED_THREE_MIC;
-            } else if (((int)channel_mask == AUDIO_CHANNEL_INDEX_MASK_4) &&
+            } else if ((channel_mask == AUDIO_CHANNEL_INDEX_MASK_4) &&
                        (my_data->source_mic_type & SOURCE_QUAD_MIC)) {
                 snd_device = SND_DEVICE_IN_UNPROCESSED_QUAD_MIC;
             } else {
@@ -3216,9 +3240,11 @@ int platform_set_parameters(void *platform, struct str_parms *parms)
     struct platform_data *my_data = (struct platform_data *)platform;
     char value[256] = {0};
     int ret = 0, err;
+    int len;
     char *kv_pairs = NULL;
 
     kv_pairs = str_parms_to_str(parms);
+    len = strlen(kv_pairs);
     ALOGV("%s: enter: - %s", __func__, kv_pairs);
     free(kv_pairs);
 
@@ -3301,6 +3327,7 @@ int platform_set_parameters(void *platform, struct str_parms *parms)
     }
 
     native_audio_set_params(platform, parms, value, sizeof(value));
+    true_32_bit_set_params(parms, value, len);
     ALOGV("%s: exit with code(%d)", __func__, ret);
     return ret;
 }
