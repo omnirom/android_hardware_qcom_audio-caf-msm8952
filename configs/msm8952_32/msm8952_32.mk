@@ -15,12 +15,12 @@ AUDIO_FEATURE_ENABLED_VOICE_CONCURRENCY := true
 AUDIO_FEATURE_ENABLED_DS2_DOLBY_DAP := true
 MM_AUDIO_ENABLED_SAFX := true
 DOLBY_ENABLE := false
-#AUDIO_FEATURE_ENABLED_SSR := true
+AUDIO_FEATURE_ENABLED_SSR := true
 AUDIO_FEATURE_ENABLED_PCM_OFFLOAD := true
 AUDIO_FEATURE_ENABLED_PCM_OFFLOAD_24 := true
 AUDIO_FEATURE_ENABLED_FLAC_OFFLOAD := true
 AUDIO_FEATURE_ENABLED_VORBIS_OFFLOAD := true
-#AUDIO_FEATURE_ENABLED_WMA_OFFLOAD := true
+AUDIO_FEATURE_ENABLED_WMA_OFFLOAD := true
 AUDIO_FEATURE_ENABLED_ALAC_OFFLOAD := true
 AUDIO_FEATURE_ENABLED_APE_OFFLOAD := true
 AUDIO_FEATURE_ENABLED_AAC_ADTS_OFFLOAD := true
@@ -51,6 +51,7 @@ AUDIO_FEATURE_ENABLED_HDMI_SPK := true
 #AUDIO_FEATURE_ENABLED_HDMI_EDID := true
 AUDIO_FEATURE_ENABLED_EXT_HDMI := true
 #
+AUDIO_FEATURE_ENABLED_SND_MONITOR := true
 ###not supported feature
 ##AUDIO_FEATURE_ENABLED_LISTEN := true
 ##DOLBY_DAP := true
@@ -69,6 +70,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 use.qti.sw.alac.decoder=true
 PRODUCT_PROPERTY_OVERRIDES += \
 use.qti.sw.ape.decoder=true
+
+#split  a2dp
+PRODUCT_PROPERTY_OVERRIDES += \
+persist.vendor.bt.enable.splita2dp=false
 
 USE_XML_AUDIO_POLICY_CONF := 1
 
@@ -107,7 +112,7 @@ PRODUCT_COPY_FILES += \
 
 #XML Audio configuration files
 ifeq ($(USE_XML_AUDIO_POLICY_CONF), 1)
-ifeq ($(TARGET_USES_AOSP), true)
+ifeq ($(TARGET_USES_AOSP_FOR_AUDIO), true)
 PRODUCT_COPY_FILES += \
     $(TOPDIR)hardware/qcom/audio/configs/common/audio_policy_configuration.xml:/system/etc/audio_policy_configuration.xml
 else
@@ -134,3 +139,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Low latency audio buffer size in frames
 PRODUCT_PROPERTY_OVERRIDES += \
     audio_hal.period_size=192
+
+#split  a2dp
+PRODUCT_PROPERTY_OVERRIDES += \
+persist.vendor.bt.enable.splita2dp=false
