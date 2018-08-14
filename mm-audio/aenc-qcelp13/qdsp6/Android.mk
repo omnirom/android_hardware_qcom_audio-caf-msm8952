@@ -27,7 +27,7 @@ libOmxQcelp13Enc-inc       += $(TARGET_OUT_HEADERS)/mm-core/omxcore
 
 LOCAL_MODULE            := libOmxQcelp13Enc
 LOCAL_MODULE_TAGS       := optional
-LOCAL_CFLAGS            := $(libOmxQcelp13Enc-def)
+LOCAL_CFLAGS            := $(libOmxQcelp13Enc-def) -Wall -Wno-error
 LOCAL_C_INCLUDES        := $(libOmxQcelp13Enc-inc)
 LOCAL_PRELINK_MODULE    := false
 LOCAL_SHARED_LIBRARIES  := libutils liblog

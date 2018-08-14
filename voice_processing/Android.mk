@@ -12,9 +12,7 @@ LOCAL_SRC_FILES:= \
 
 LOCAL_CFLAGS += \
     -Wall \
-    -Werror \
-    -Wno-unused-function \
-    -Wno-unused-variable \
+    -Wno-error
 
 LOCAL_C_INCLUDES += \
     $(call include-path-for, audio-effects)
