@@ -29,8 +29,7 @@ LOCAL_SHARED_LIBRARIES := \
 
 LOCAL_CFLAGS += \
     -Wall \
-    -Werror \
-    -Wno-unused-variable \
+    -Wno-error
 
 LOCAL_MODULE_RELATIVE_PATH := soundfx
 LOCAL_MODULE:= libqcomvisualizer
